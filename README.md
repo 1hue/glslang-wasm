@@ -67,11 +67,11 @@ Needs podman only.
 | Command | |
 | --- | --- |
 | `sh scripts/build.sh` | Build `dist/` |
-| `sh scripts/build-ts.sh` | Build loader only (`src/index.ts`), no WASM rebuild |
+| `sh scripts/build-ts.sh` | Build loader `src/index.ts`, no WASM rebuild |
 | `sh scripts/test.sh` | Test |
 
 ## License
 
 [MIT](LICENSE).
 
-`dist/` also has [glslang](dist/LICENSE.glslang.txt), [Emscripten](dist/LICENSE.emscripten.txt) and [musl](dist/LICENSE.musl.txt) licenses.
+`dist/` is also under [glslang](LICENSE-glslang), [Emscripten](LICENSE-emscripten) and [musl](LICENSE-musl) licenses.

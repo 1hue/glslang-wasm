@@ -15,7 +15,8 @@
     "test": "node --test test/*.test.mts"
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE*"
   ],
   "devDependencies": {
     "typescript": "^7.0.2"

@@ -11,7 +11,7 @@ SPDX-License-Identifier = "MIT"
 # Built from https://github.com/KhronosGroup/glslang (tag and commit in scripts/compile.sh)
 # with Emscripten (MIT OR NCSA, MIT chosen) and its musl libc (MIT)
 [[annotations]]
-path = ["dist/glslang.wasm", "dist/LICENSE.glslang.txt"]
+path = ["dist/glslang.wasm", "LICENSE-glslang"]
 precedence = "override"
 SPDX-FileCopyrightText = [
   "2002-2026 The Khronos Group Inc. and glslang contributors",
@@ -21,14 +21,14 @@ SPDX-FileCopyrightText = [
 SPDX-License-Identifier = "LicenseRef-glslang AND MIT"
 
 [[annotations]]
-path = "dist/LICENSE.musl.txt"
+path = "LICENSE-musl"
 precedence = "override"
 SPDX-FileCopyrightText = "2005-2020 Rich Felker, et al."
 SPDX-License-Identifier = "MIT"
 
 # Emscripten output
 [[annotations]]
-path = ["dist/glslang.js", "dist/LICENSE.emscripten.txt"]
+path = ["dist/glslang.js", "LICENSE-emscripten"]
 precedence = "override"
 SPDX-FileCopyrightText = "2010-2026 Emscripten authors"
 SPDX-License-Identifier = "MIT"

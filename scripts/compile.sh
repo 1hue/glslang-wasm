@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build dist/ (glslang.wasm, loader, licenses). Runs inside Emscripten container, see build.sh
+# Build dist/ (glslang.wasm, loader) and root third-party licenses. Runs inside Emscripten container, see build.sh
 set -eu
 cd "$(dirname "$0")/.."
 
@@ -45,6 +45,6 @@ em++ -Oz -flto -fno-exceptions -fno-rtti \
 npm ci
 npx tsc
 
-cp /tmp/glslang/LICENSE.txt dist/LICENSE.glslang.txt
-cp "$EMSDK/upstream/emscripten/LICENSE" dist/LICENSE.emscripten.txt
-cp "$EMSDK/upstream/emscripten/system/lib/libc/musl/COPYRIGHT" dist/LICENSE.musl.txt
+cp /tmp/glslang/LICENSE.txt LICENSE-glslang
+cp "$EMSDK/upstream/emscripten/LICENSE" LICENSE-emscripten
+cp "$EMSDK/upstream/emscripten/system/lib/libc/musl/COPYRIGHT" LICENSE-musl
