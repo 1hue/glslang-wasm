@@ -14,7 +14,7 @@ Or `chmod +x` and drop `sh`.
 
 ## Release
 
-1. Bump `version` in `package.json` and push to `main`.
-2. Publish GitHub release tagged `v<version>`. Pre-releases go to npm tag `next`.
-3. CI attaches tarball to release and stages it on npm.
-4. Approve on npmjs.com under Staged Packages.
+1. Publish GitHub release with new tag `v<version>`, e.g. `v1.0.1`.
+   - Pre-release publishes under npm `next` instead of `latest`.
+2. CI sets `package.json` version from tag, attaches tarball to release and stages it on npm.
+3. Approve on npmjs.com under Staged Packages.
