@@ -1,0 +1,19 @@
+{
+  "name": "glslang-wasm",
+  "version": "0.1.0",
+  "description": "GLSL validation with Khronos glslang compiled to WebAssembly",
+  "license": "MIT AND LicenseRef-glslang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1hue/glslang-wasm.git"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "sh scripts/build.sh",
+    "test": "node --test test/*.test.mts"
+  },
+  "files": [
+    "dist"
+  ]
+}
