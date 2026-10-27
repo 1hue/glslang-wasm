@@ -16,9 +16,7 @@
     "webassembly",
     "emscripten",
     "linter",
-    "compiler",
-    "godot",
-    "godot4"
+    "compiler"
   ],
   "license": "MIT AND LicenseRef-glslang",
   "author": "1hue (https://github.com/1hue)",
