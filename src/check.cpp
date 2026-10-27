@@ -1,13 +1,15 @@
-// Single-stage GLSL check: parse only, no linking or SPIR-V output
+// Single-stage GLSL check, optionally linked and compiled to SPIR-V
 
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
+#include <SPIRV/GlslangToSpv.h>
 
 #include <emscripten.h>
 
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <vector>
 
 // Module.resolveInclude from index.js: malloc'd `name\0source`, or 0 if not found
 EM_JS(char *, resolveInclude, (int system, const char *header, const char *includer, int depth), {
@@ -44,12 +46,18 @@ private:
 };
 
 static std::string infoLog;
+static std::vector<unsigned int> spirvWords;
 
 extern "C" {
 
 int initialize() { return glslang::InitializeProcess(); }
 
 void finalize() { glslang::FinalizeProcess(); }
+
+// SPIR-V from last check with spirv set, empty on errors
+const unsigned int *spirvData() { return spirvWords.data(); }
+
+int spirvLength() { return static_cast<int>(spirvWords.size()); }
 
 // name: source name in diagnostics, empty for string index
 // stage: EShLanguage
@@ -60,8 +68,9 @@ void finalize() { glslang::FinalizeProcess(); }
 // vulkanVersion, spirvVersion: EShTargetClientVersion, EShTargetLanguageVersion; 0 for defaults
 // link: also link as single-stage program (missing entry point etc.)
 // forceDefaults: source has no `#version`. glslang only applies defaultProfile when forced
+// spirv: link and generate SPIR-V (needs OpenGL or Vulkan client)
 const char *check(const char *source, const char *name, int stage, int client, int defaultVersion, int defaultProfile,
-	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults) {
+	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults, int spirv) {
 	auto language = static_cast<EShLanguage>(stage);
 	glslang::TShader shader(language);
 
@@ -101,11 +110,15 @@ const char *check(const char *source, const char *name, int stage, int client, i
 
 	infoLog = shader.getInfoLog();
 
-	if (link && parsed) {
+	spirvWords.clear();
+	if ((link || spirv) && parsed) {
 		glslang::TProgram program;
 		program.addShader(&shader);
-		program.link(static_cast<EShMessages>(messages));
+		bool linked = program.link(static_cast<EShMessages>(messages));
 		infoLog += program.getInfoLog();
+		if (spirv && linked) {
+			glslang::GlslangToSpv(*program.getIntermediate(language), spirvWords);
+		}
 	}
 	return infoLog.c_str();
 }

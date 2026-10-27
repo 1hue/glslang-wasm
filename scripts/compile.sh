@@ -1,5 +1,5 @@
 #!/bin/sh
-# Builds dist/ (glslang.wasm, loader, licenses). Runs inside Emscripten container, see scripts/build.sh
+# Build dist/ (glslang.wasm, loader, licenses). Runs inside Emscripten container, see build.sh
 set -eu
 cd "$(dirname "$0")/.."
 
@@ -16,7 +16,7 @@ cp -r "$EMSDK/upstream/emscripten/cache" "$EM_CACHE"
 emcmake cmake -S /tmp/glslang -B /tmp/build \
 	-DCMAKE_BUILD_TYPE=MinSizeRel \
 	-DBUILD_EXTERNAL=OFF \
-	-DENABLE_SPIRV=OFF \
+	-DENABLE_SPIRV=ON \
 	-DENABLE_HLSL=OFF \
 	-DENABLE_OPT=OFF \
 	-DENABLE_PCH=OFF \
@@ -37,8 +37,8 @@ em++ -Oz -flto -fno-exceptions -fno-rtti \
 	-sFILESYSTEM=0 \
 	-sALLOW_MEMORY_GROWTH \
 	-sSTACK_SIZE=8MB \
-	-sEXPORTED_FUNCTIONS=_initialize,_finalize,_check,_free \
-	-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString \
+	-sEXPORTED_FUNCTIONS=_initialize,_finalize,_check,_spirvData,_spirvLength,_free \
+	-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,HEAPU32 \
 	-o dist/glslang.js
 
 cp src/index.js src/index.d.ts src/glslang.d.ts dist/

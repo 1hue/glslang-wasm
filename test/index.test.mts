@@ -128,6 +128,57 @@ test('link reports missing entry point without a line', async () => {
 	assert.match(result.diagnostics[0].message, /Missing entry point/);
 });
 
+const SPIRV_MAGIC = 0x07230203;
+
+const COMPUTE = lines(
+	'#version 450',
+	'layout(local_size_x = 8) in;',
+	'layout(set = 0, binding = 0) buffer Data { float values[]; };',
+	'void main() { values[gl_GlobalInvocationID.x] *= 2.0; }',
+);
+
+test('compile produces SPIR-V for the requested version', async () => {
+	const glslang = await createGlslang();
+
+	const result = await glslang.compile(COMPUTE, { stage: 'compute', spirvVersion: '1.4' });
+
+	assert.deepEqual(result.diagnostics, []);
+	assert.ok(result.spirv instanceof Uint32Array);
+	assert.equal(result.spirv[0], SPIRV_MAGIC);
+	assert.equal(result.spirv[1], 0x00010400);
+});
+
+test('compile errors give diagnostics and no SPIR-V', async () => {
+	const glslang = await createGlslang();
+	const source = lines('#version 450', 'void main() { foo; }');
+
+	const result = await glslang.compile(source, { stage: 'fragment' });
+
+	assert.equal(result.spirv, undefined);
+	assert.match(result.diagnostics[0].message, /undeclared identifier/);
+});
+
+test('compile without main is a link error and no SPIR-V', async () => {
+	const glslang = await createGlslang();
+
+	const result = await glslang.compile(lines('#version 450', 'void helper() {}'), { stage: 'fragment' });
+
+	assert.equal(result.spirv, undefined);
+	assert.match(result.diagnostics[0].message, /Missing entry point/);
+});
+
+test('SPIR-V from one compile is not reused by the next', async () => {
+	const glslang = await createGlslang();
+
+	const first = await glslang.compile(COMPUTE, { stage: 'compute' });
+	const failed = await glslang.compile(lines('#version 450', 'void main() { foo; }'), { stage: 'compute' });
+	const checked = await glslang.check(COMPUTE, { stage: 'compute', client: 'vulkan' });
+
+	assert.ok(first.spirv);
+	assert.equal(failed.spirv, undefined);
+	assert.equal('spirv' in checked, false);
+});
+
 test('deep parentheses hit the parser limit as a normal error', async () => {
 	const glslang = await createGlslang();
 	const depth = 20000;

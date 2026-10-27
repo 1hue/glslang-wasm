@@ -1,40 +1,32 @@
 # glslang-wasm
 
-[glslang](https://github.com/KhronosGroup/glslang) parser compiled to WebAssembly. Checks one shader stage at a time and returns diagnostics. No linking, no SPIR-V output. Runs in Node, browsers and workers.
+Check GLSL shaders for errors and compile them to SPIR-V from JavaScript. Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly. Errors match glslangValidator word for word. Nothing else to install.
+
+Handles OpenGL, Vulkan and ES, Godot Shaders, `#include`.
+
+Written for editor diagnostics in [glsl-vscode](https://github.com/1hue/glsl-vscode), also fine for build scripts or CI.
 
 ```js
 const { createGlslang } = require('glslang-wasm');
 
 const glslang = await createGlslang();
 const { diagnostics } = await glslang.check(source, { stage: 'fragment' });
-// [{ severity: 'error', source: '0', line: 2, column: 15, message: "'foo' : undeclared identifier" }]
+const { spirv } = await glslang.compile(source, { stage: 'fragment' }); // Uint32Array, Vulkan by default
 ```
 
-Options:
-
-- `stage`: `vertex`, `fragment`, `compute`, etc.
-- `client`: `none` (default), `opengl` or `vulkan`. `vulkan` for Vulkan GLSL (`set`, push constants, etc.)
-- `defaultVersion`, `defaultProfile`: used without `#version`
-- `name`: source name in diagnostics, passed as `includer` to `include`
-- `include(header, { includer, system, depth })`: resolves `#include`, returns `{ name, source }` or nothing. Synchronous. Enables `GL_GOOGLE_include_directive`, no `#extension` line needed
-
-- `preamble`: text before the source, e.g. declarations. Not part of source line numbers
-- `vulkanVersion`, `spirvVersion`: targets, e.g. `'1.1'` and `'1.4'`. Defaults 1.4 and 1.6
-- `link`: also link the stage, for errors like a missing `main`. Link errors have no `line`
-
-Diagnostics inside includes have `source` set to the include's `name`.
-
-If a check crashes (stack overflow on very deep expressions) it rejects and the next call gets a fresh instance.
+Options in `dist/index.d.ts`.
 
 ## Build
 
-```sh
-npm run build
-```
+Needs podman only.
 
-Runs `scripts/compile.sh` in the `emscripten/emsdk` container. glslang tag and commit are pinned in `scripts/compile.sh`.
-Tests: `npm test` (Node 23.6+, runs the TypeScript tests directly).
+| Command | |
+| --- | --- |
+| `sh scripts/build.sh` | Build `dist/` |
+| `sh scripts/test.sh` | Test |
+| `npm run build` | Build, with Node on host |
+| `npm test` | Test, with Node on host |
 
 ## License
 
-Wrapper MIT. `dist/glslang.wasm` contains glslang (`dist/LICENSE.glslang.txt`) and Emscripten's runtime (`dist/LICENSE.emscripten.txt`, `dist/LICENSE.musl.txt`).
+MIT. `dist/` also has glslang, Emscripten and musl licenses.

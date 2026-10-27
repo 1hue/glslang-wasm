@@ -1,5 +1,5 @@
 #!/bin/sh
-# Runs compile.sh in an Emscripten container
+# Run compile.sh in Emscripten container
 set -eu
 cd "$(dirname "$0")/.."
 

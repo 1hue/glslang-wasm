@@ -1,6 +1,9 @@
 // @ts-check
 'use strict';
 
+/** @import { CheckOptions, CompileResult, Diagnostic, createGlslang as CreateGlslang } from './index' */
+/** @typedef {(source: string, options: CheckOptions, spirv: boolean) => Promise<CompileResult>} Run */
+
 const createModule = require('./glslang.js');
 
 const STAGES = {
@@ -55,7 +58,7 @@ function spirvTarget(version) {
 
 /** @param {string} log */
 function parseLog(log) {
-	/** @type {import('./index').Diagnostic[]} */
+	/** @type {Diagnostic[]} */
 	const diagnostics = [];
 
 	for (const line of log.split(/\r?\n/)) {
@@ -95,7 +98,7 @@ function parseLog(log) {
 	return diagnostics;
 }
 
-/** @type {typeof import('./index').createGlslang} */
+/** @type {typeof CreateGlslang} */
 async function createGlslang(options = {}) {
 	const load = async () => {
 		const module = await createModule({ wasmBinary: options.wasmBinary, print() {}, printErr() {} });
@@ -108,59 +111,76 @@ async function createGlslang(options = {}) {
 	let ready = load();
 	await ready;
 
+	/** @type {Run} */
+	const run = async (
+		source,
+		{
+			stage,
+			name = '',
+			client = 'none',
+			defaultVersion = 100,
+			defaultProfile = 'none',
+			include,
+			preamble = '',
+			vulkanVersion,
+			spirvVersion,
+			link = false,
+		},
+		spirv,
+	) => {
+		const module = await ready;
+		const [sourcePointer, namePointer, preamblePointer] = [source, name, preamble].map(module.stringToNewUTF8);
+
+		// Called by check.cpp per `#include`
+		module.resolveInclude = (system, header, includer, depth) => {
+			const result = include?.(header, { includer, system: system === 1, depth });
+			return result ? module.stringToNewUTF8(`${result.name}\0${result.source}`) : 0;
+		};
+
+		let log;
+		try {
+			log = module.UTF8ToString(
+				module._check(
+					sourcePointer,
+					namePointer,
+					STAGES[stage],
+					CLIENTS[client],
+					defaultVersion,
+					PROFILES[defaultProfile],
+					include ? 1 : 0,
+					preamblePointer,
+					vulkanTarget(vulkanVersion),
+					spirvTarget(spirvVersion),
+					link ? 1 : 0,
+					VERSION.test(source) ? 0 : 1,
+					spirv ? 1 : 0,
+				),
+			);
+		} catch (error) {
+			// Trap, host stack overflow or throwing `include` leaves instance state unwound
+			ready = load();
+			throw error;
+		}
+
+		module._free(sourcePointer);
+		module._free(namePointer);
+		module._free(preamblePointer);
+
+		// Copy out of WASM memory - next check overwrites it
+		const length = module._spirvLength();
+		const spirvWords = length ? module.HEAPU32.slice(module._spirvData() / 4, module._spirvData() / 4 + length) : undefined;
+
+		return { log, diagnostics: parseLog(log), spirv: spirvWords };
+	};
+
 	return {
-		async check(
-			source,
-			{
-				stage,
-				name = '',
-				client = 'none',
-				defaultVersion = 100,
-				defaultProfile = 'none',
-				include,
-				preamble = '',
-				vulkanVersion,
-				spirvVersion,
-				link = false,
-			},
-		) {
-			const module = await ready;
-			const [sourcePointer, namePointer, preamblePointer] = [source, name, preamble].map(module.stringToNewUTF8);
+		async check(source, options) {
+			const { log, diagnostics } = await run(source, options, false);
+			return { log, diagnostics };
+		},
 
-			// Called by check.cpp per `#include`
-			module.resolveInclude = (system, header, includer, depth) => {
-				const result = include?.(header, { includer, system: system === 1, depth });
-				return result ? module.stringToNewUTF8(`${result.name}\0${result.source}`) : 0;
-			};
-
-			let log;
-			try {
-				log = module.UTF8ToString(
-					module._check(
-						sourcePointer,
-						namePointer,
-						STAGES[stage],
-						CLIENTS[client],
-						defaultVersion,
-						PROFILES[defaultProfile],
-						include ? 1 : 0,
-						preamblePointer,
-						vulkanTarget(vulkanVersion),
-						spirvTarget(spirvVersion),
-						link ? 1 : 0,
-						VERSION.test(source) ? 0 : 1,
-					),
-				);
-			} catch (error) {
-				// Trap, host stack overflow or throwing `include` leaves instance state unwound
-				ready = load();
-				throw error;
-			}
-
-			module._free(sourcePointer);
-			module._free(namePointer);
-			module._free(preamblePointer);
-			return { log, diagnostics: parseLog(log) };
+		async compile(source, options) {
+			return run(source, { client: 'vulkan', ...options }, true);
 		},
 
 		async dispose() {

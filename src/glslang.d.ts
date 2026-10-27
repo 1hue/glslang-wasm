@@ -17,8 +17,13 @@ export interface GlslangModule {
 		spirvVersion: number,
 		link: number,
 		forceDefaults: number,
+		spirv: number,
 	): number;
+	/** SPIR-V words from last check with spirv set */
+	_spirvData(): number;
+	_spirvLength(): number;
 	_free(pointer: number): void;
+	HEAPU32: Uint32Array;
 	stringToNewUTF8(text: string): number;
 	UTF8ToString(pointer: number): string;
 	/** Set by index.js, called by check.cpp per `#include`. Returns malloc'd `name\0source` or 0 */

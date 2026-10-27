@@ -81,7 +81,17 @@ export interface Glslang {
 	 * Rejects on a WASM trap or stack overflow, then later calls use a fresh instance
 	 */
 	check(source: string, options: CheckOptions): Promise<CheckResult>;
+	/** Check, link and generate SPIR-V. Same blocking and recovery as check */
+	compile(source: string, options: CompileOptions): Promise<CompileResult>;
 	dispose(): Promise<void>;
+}
+
+/** Client `vulkan` by default, `none` can't produce SPIR-V. Always links */
+export type CompileOptions = Omit<CheckOptions, 'link'>;
+
+export interface CompileResult extends CheckResult {
+	/** SPIR-V words. None when there are errors */
+	spirv?: Uint32Array;
 }
 
 /** `wasmBinary`: bytes of glslang.wasm, otherwise loaded next to glslang.js */
