@@ -41,7 +41,10 @@ em++ -Oz -flto -fno-exceptions -fno-rtti \
 	-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,HEAPU32 \
 	-o dist/glslang.js
 
-cp src/index.js src/index.d.ts src/glslang.d.ts dist/
+# Loader and its types
+npm ci
+npx tsc
+
 cp /tmp/glslang/LICENSE.txt dist/LICENSE.glslang.txt
 cp "$EMSDK/upstream/emscripten/LICENSE" dist/LICENSE.emscripten.txt
 cp "$EMSDK/upstream/emscripten/system/lib/libc/musl/COPYRIGHT" dist/LICENSE.musl.txt
