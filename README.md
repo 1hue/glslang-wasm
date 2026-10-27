@@ -10,12 +10,6 @@ Checks your GLSL shaders for errors and compiles them to SPIR-V from JavaScript.
 
 <br>
 
-Install from [Releases](https://github.com/1hue/glslang-wasm/releases):
-
-```sh
-npm install https://github.com/1hue/glslang-wasm/releases/latest/download/glslang-wasm.tgz
-```
-
 ```js
 // @ts-check
 import { createGlslang } from 'glslang-wasm';
