@@ -1,6 +1,6 @@
 {
   "name": "glslang-wasm",
-  "description": "GLSL validation with Khronos glslang compiled to WebAssembly",
+  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V in JavaScript",
   "keywords": [
     "glsl",
     "glslang",
