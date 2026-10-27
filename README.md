@@ -68,7 +68,7 @@ Needs podman only.
 | --- | --- |
 | `sh scripts/build.sh` | Build `dist/` |
 | `sh scripts/build-ts.sh` | Build loader `src/index.ts`, no WASM rebuild |
-| `sh scripts/test.sh` | Test |
+| `sh scripts/test.sh` | Run tests |
 
 ## License
 
