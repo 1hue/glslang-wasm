@@ -32,7 +32,6 @@
     "default": "./dist/index.js"
   },
   "scripts": {
-    "build": "sh scripts/build.sh",
     "build:ts": "tsc",
     "test": "node --test test/*.test.mts"
   },

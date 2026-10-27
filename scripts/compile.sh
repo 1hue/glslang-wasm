@@ -44,7 +44,7 @@ em++ -Oz -flto -fno-exceptions -fno-rtti \
 
 # Loader and its types
 npm ci
-npx tsc
+npm run build:ts
 
 cp /tmp/glslang/LICENSE.txt LICENSE-glslang
 cp "$EMSDK/upstream/emscripten/LICENSE" LICENSE-emscripten

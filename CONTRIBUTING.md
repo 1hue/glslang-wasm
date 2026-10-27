@@ -6,11 +6,16 @@ Needs podman only.
 
 | Command | |
 | --- | --- |
-| `sh scripts/build.sh` | Build `dist/` |
-| `sh scripts/build-ts.sh` | Build loader `src/index.ts`, no WASM rebuild |
-| `sh scripts/test.sh` | Run tests |
+| `make build` | Build `dist/` |
+| `make build-ts` | Build loader `src/index.ts`, no WASM rebuild |
+| `make test` | Run tests |
 
-Or `chmod +x` and drop `sh`.
+> [!TIP]
+>
+> | Commands | | |
+> | --- | --- | --- |
+> | `make` | on host | Provides development environment via podman |
+> | `package.json` scripts | in container | Actual work: build js loader, test |
 
 ## Release
 
