@@ -36,4 +36,4 @@ declare function createModule(options?: {
 	printErr?(text: string): void;
 }): Promise<GlslangModule>;
 
-export = createModule;
+export default createModule;

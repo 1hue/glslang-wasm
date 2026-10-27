@@ -32,6 +32,7 @@ em++ -Oz -flto -fno-exceptions -fno-rtti \
 	src/check.cpp \
 	$(find /tmp/build -name '*.a') \
 	-sMODULARIZE \
+	-sEXPORT_ES6 \
 	-sEXPORT_NAME=createModule \
 	-sENVIRONMENT=node,web,worker \
 	-sFILESYSTEM=0 \

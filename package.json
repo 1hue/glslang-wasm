@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "description": "GLSL validation with Khronos glslang compiled to WebAssembly",
   "license": "MIT AND LicenseRef-glslang",
+  "author": "1hue (https://github.com/1hue)",
   "repository": {
     "type": "git",
-    "url": "https://github.com/1hue/glslang-wasm.git"
+    "url": "https://github.com/1hue/glslang-wasm"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
   "scripts": {
     "build": "sh scripts/build.sh",
     "build:ts": "tsc",

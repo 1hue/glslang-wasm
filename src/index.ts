@@ -1,4 +1,4 @@
-import createModule = require('./glslang.js');
+import createModule from './glslang.js';
 
 export type Stage =
 	| 'vertex'

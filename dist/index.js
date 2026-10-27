@@ -1,8 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseLog = parseLog;
-exports.createGlslang = createGlslang;
-const createModule = require("./glslang.js");
+import createModule from './glslang.js';
 const STAGES = {
     vertex: 0,
     tesscontrol: 1,
@@ -40,7 +36,7 @@ function vulkanTarget(version) {
 function spirvTarget(version) {
     return version ? (1 << 16) | (Number(version.split('.')[1]) << 8) : 0;
 }
-function parseLog(log) {
+export function parseLog(log) {
     const diagnostics = [];
     for (const line of log.split(/\r?\n/)) {
         const located = LOCATED.exec(line);
@@ -75,7 +71,7 @@ function parseLog(log) {
     return diagnostics;
 }
 /** `wasmBinary`: bytes of glslang.wasm, otherwise loaded next to glslang.js */
-async function createGlslang(options = {}) {
+export async function createGlslang(options = {}) {
     const load = async () => {
         const module = await createModule({ wasmBinary: options.wasmBinary, print() { }, printErr() { } });
         if (!module._initialize()) {
