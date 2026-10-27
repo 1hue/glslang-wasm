@@ -1,6 +1,6 @@
 {
   "name": "glslang-wasm",
-  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V in JavaScript",
+  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V with JavaScript",
   "keywords": [
     "glsl",
     "glslang",
