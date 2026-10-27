@@ -1,6 +1,20 @@
 {
   "name": "glslang-wasm",
   "description": "GLSL validation with Khronos glslang compiled to WebAssembly",
+  "keywords": [
+    "glsl",
+    "glslang",
+    "shader",
+    "spirv",
+    "vulkan",
+    "opengl",
+    "webgl",
+    "wasm",
+    "webassembly",
+    "validator",
+    "compiler",
+    "godot"
+  ],
   "license": "MIT AND LicenseRef-glslang",
   "author": "1hue (https://github.com/1hue)",
   "repository": {
