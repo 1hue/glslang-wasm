@@ -4,5 +4,5 @@ set -eu
 cd "$(dirname "$0")/.."
 
 podman run --rm --pull=newer --userns=keep-id -e HOME=/tmp -v .:/w:Z -w /w \
-	docker.io/emscripten/emsdk:latest \
+	docker.io/emscripten/emsdk:6.0.13 \
 	sh scripts/compile.sh
