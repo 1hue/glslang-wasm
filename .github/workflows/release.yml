@@ -42,3 +42,29 @@ jobs:
         run: gh release upload "$GITHUB_REF_NAME" glslang-wasm-*.tgz --clobber
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tarball
+          path: glslang-wasm-*.tgz
+
+  npm:
+    name: npm
+    needs: attach
+    runs-on: ubuntu-latest
+    permissions:
+      # npm trusted publishing (OIDC)
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: tarball
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org
+
+      # Approve on npmjs.com > Staged Packages
+      - name: Stage
+        run: npm stage publish glslang-wasm-*.tgz
