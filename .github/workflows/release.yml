@@ -13,7 +13,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   attach:
-    name: Attach
+    name: Attach to release
     needs: ci
     runs-on: ubuntu-latest
     permissions:
@@ -49,8 +49,8 @@ jobs:
           name: tarball
           path: glslang-wasm-*.tgz
 
-  npm:
-    name: npm
+  stage:
+    name: Stage on npm
     needs: attach
     runs-on: ubuntu-latest
     permissions:
