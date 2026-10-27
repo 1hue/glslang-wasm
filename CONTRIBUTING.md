@@ -10,8 +10,7 @@ Needs podman only.
 | `make build-ts` | Build loader `src/index.ts`, no WASM rebuild |
 | `make test` | Run tests |
 
-> [!TIP]
->
+> [!NOTE]
 > | Commands | | |
 > | --- | --- | --- |
 > | `make` | on host | Provides development environment via podman |
