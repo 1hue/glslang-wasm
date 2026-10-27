@@ -1,6 +1,6 @@
 {
   "name": "glslang-wasm",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "GLSL validation with Khronos glslang compiled to WebAssembly",
   "license": "MIT AND LicenseRef-glslang",
   "author": "1hue (https://github.com/1hue)",
