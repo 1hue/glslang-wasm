@@ -1,10 +1,14 @@
 # glslang-wasm
 
-Check GLSL shaders for errors and compile them to SPIR-V from JavaScript. Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly. Errors match glslangValidator word for word.
+Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
+
+Check GLSL shaders for errors and compile them to SPIR-V from JavaScript. Errors match glslangValidator word for word.
 
 - Nothing else to install.
 - Handles OpenGL, Vulkan, ES, Godot Shaders, `#include`.
 - Written for IDE diagnostics in [glsl-vscode](https://github.com/1hue/glsl-vscode), also works for build scripts or CI.
+
+<br>
 
 ```js
 // @ts-check
@@ -68,4 +72,6 @@ Needs podman only.
 
 ## License
 
-[MIT](LICENSE). `dist/` also has [glslang](dist/LICENSE.glslang.txt), [Emscripten](dist/LICENSE.emscripten.txt) and [musl](dist/LICENSE.musl.txt) licenses.
+[MIT](LICENSE).
+
+`dist/` also has [glslang](dist/LICENSE.glslang.txt), [Emscripten](dist/LICENSE.emscripten.txt) and [musl](dist/LICENSE.musl.txt) licenses.
