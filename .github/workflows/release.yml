@@ -65,6 +65,6 @@ jobs:
           node-version: latest
           registry-url: https://registry.npmjs.org
 
-      # Approve on npmjs.com > Staged Packages
+      # Approve on npmjs.com > Staged Packages. GitHub pre-release -> npm tag next
       - name: Stage
-        run: npm stage publish glslang-wasm-*.tgz
+        run: npm stage publish glslang-wasm-*.tgz ${{ github.event.release.prerelease && '--tag next' || '' }}
