@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile, writeFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createGlslang, parseLog } from '../dist/index.js';
 import type { CheckResult } from '../dist/index.js';
@@ -165,6 +166,24 @@ test('compile without main is a link error and no SPIR-V', async () => {
 
 	assert.equal(result.spirv, undefined);
 	assert.match(result.diagnostics[0].message, /Missing entry point/);
+});
+
+const EXAMPLE = new URL('fixtures/example.frag', import.meta.url);
+const EXAMPLE_SPIRV = new URL('fixtures/example.frag.spv', import.meta.url);
+
+// UPDATE_FIXTURES=1 rewrites example.frag.spv - needed after glslang updates
+test('example compiles to expected SPIR-V', async () => {
+	const glslang = await createGlslang();
+
+	const result = await glslang.compile(await readFile(EXAMPLE, 'utf8'), { stage: 'fragment' });
+
+	assert.deepEqual(result.diagnostics, []);
+	assert.ok(result.spirv);
+	const bytes = Buffer.from(result.spirv.buffer, result.spirv.byteOffset, result.spirv.byteLength);
+	if (process.env.UPDATE_FIXTURES) {
+		await writeFile(EXAMPLE_SPIRV, bytes);
+	}
+	assert.deepEqual(bytes, await readFile(EXAMPLE_SPIRV));
 });
 
 test('SPIR-V from one compile is not reused by the next', async () => {
