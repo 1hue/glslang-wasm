@@ -2,3 +2,4 @@ node_modules/
 *.tgz
 *.spv
 !test/fixtures/*.spv
+dist/
