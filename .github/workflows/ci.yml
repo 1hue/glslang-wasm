@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     container: docker.io/emscripten/emsdk:6.0.13
     steps:
@@ -18,7 +19,14 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: actions/cache@v6
+        id: cache
+        with:
+          path: dist/
+          key: dist-${{ hashFiles('.github/workflows/ci.yml', 'scripts/compile.sh', 'src/**', 'package-lock.json', 'tsconfig.json') }}
+
       - name: Build
+        if: steps.cache.outputs.cache-hit != 'true'
         run: sh scripts/compile.sh
 
       - uses: actions/upload-artifact@v7
@@ -27,6 +35,7 @@ jobs:
           path: dist/
 
   test:
+    name: Test
     needs: build
     runs-on: ubuntu-latest
     steps:
