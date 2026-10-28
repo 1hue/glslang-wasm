@@ -35,7 +35,7 @@ export interface IncludeContext {
 	depth: number;
 }
 
-/** Synchronous; undefined when not found */
+/** Synchronous, undefined when not found */
 export type IncludeResolver = (header: string, context: IncludeContext) => Include | undefined;
 
 export interface CheckOptions {
@@ -117,8 +117,8 @@ export interface CompileResult extends CheckResult {
 
 export interface Glslang {
 	/**
-	 * Blocks while glslang runs; use a worker for a hard timeout.
-	 * Rejects on a WASM trap or stack overflow, then later calls use a fresh instance
+	 * Blocks while glslang runs - use worker for hard timeout
+	 * Rejects on WASM trap or stack overflow, later calls use fresh instance
 	 */
 	check(source: string, options: CheckOptions): Promise<CheckResult>;
 	/** Check, link and generate SPIR-V. Same blocking and recovery as check */

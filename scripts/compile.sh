@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build dist/ (glslang.wasm with SPIRV-Cross, loader) and root third-party licenses. Runs inside Emscripten container, see Makefile build
+# Build dist/ and third-party licenses in Emscripten container, see Makefile
 set -eu
 cd "$(dirname "$0")/.."
 

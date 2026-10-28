@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: latest
 
-      # package.json version is placeholder, real one comes from tag
+      # Version from tag, none in package.json
       - name: Set version from tag
         run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version
 

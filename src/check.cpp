@@ -64,9 +64,9 @@ int spirvLength() { return static_cast<int>(spirvWords.size()); }
 // defaultProfile: EProfile, used without `#version`
 // includes: enable `#include` via Module.resolveInclude
 // preamble: text before source, outside its line numbering
-// vulkanVersion, spirvVersion: EShTargetClientVersion, EShTargetLanguageVersion; 0 for defaults
+// vulkanVersion, spirvVersion: EShTargetClientVersion, EShTargetLanguageVersion, 0 for defaults
 // link: also link as single-stage program (missing entry point etc.)
-// forceDefaults: source has no `#version`. glslang only applies defaultProfile when forced
+// forceDefaults: no `#version` in source - glslang only applies defaultProfile when forced
 // spirv: link and generate SPIR-V (needs OpenGL or Vulkan client)
 // autoMap: assign missing locations and bindings, e.g. loose uniforms for OpenGL SPIR-V
 const char *check(const char *source, const char *name, int stage, int client, int defaultVersion, int defaultProfile,
