@@ -4,7 +4,7 @@ Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript
 
 - Nothing else to install and no unnecessary deps
 - Handles OpenGL, Vulkan, ES, `#include`
-- Runs in Node (used in [glsl-vscode](https://github.com/1hue/glsl-vscode)), browsers and web workers <sup>[🔗](scripts/compile.sh#L55)</sup>
+- Runs in Node (used in [glsl-vscode](https://github.com/1hue/glsl-vscode)), browsers and web workers <sup>[🔗](scripts/compile.sh#L57)</sup>
 
 > [!NOTE]
 > Built clean from Khronos glslang [16.6.0](https://github.com/KhronosGroup/glslang/releases/tag/16.6.0) and SPIRV-Cross, see [compile.sh](scripts/compile.sh).

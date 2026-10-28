@@ -1,0 +1,25 @@
+{
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
+	// Only upstream pins in compile.sh
+	enabledManagers: ['custom.regex'],
+	customManagers: [
+		{
+			customType: 'regex',
+			managerFilePatterns: ['/^scripts/compile\\.sh$/'],
+			matchStrings: [
+				'# renovate: depName=(?<depName>\\S+)\\n\\w+_TAG=(?<currentValue>\\S+)\\n\\w+_COMMIT=(?<currentDigest>\\w+)',
+			],
+			datasourceTemplate: 'github-tags',
+		},
+	],
+	packageRules: [
+		{
+			matchPackageNames: ['KhronosGroup/glslang'],
+			versioning: 'semver',
+		},
+		{
+			matchPackageNames: ['KhronosGroup/SPIRV-Cross'],
+			versioning: 'regex:^vulkan-sdk-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$',
+		},
+	],
+}

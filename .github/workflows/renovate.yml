@@ -1,0 +1,21 @@
+name: Renovate
+
+on:
+  schedule:
+    - cron: '0 6 1 * *' # Monthly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  renovate:
+    name: Renovate
+    runs-on: ubuntu-latest
+    steps:
+      # Fine-grained token - PRs from GITHUB_TOKEN don't trigger CI
+      - uses: renovatebot/github-action@v46
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_REPOSITORIES: ${{ github.repository }}

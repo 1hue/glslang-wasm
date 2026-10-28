@@ -2,8 +2,10 @@
 # Build dist/ and third-party licenses - started by make build
 set -eu
 
+# renovate: depName=KhronosGroup/glslang
 GLSLANG_TAG=16.6.0
 GLSLANG_COMMIT=e1b562a8bed273a02f30b59b66a5d499793cede5
+# renovate: depName=KhronosGroup/SPIRV-Cross
 SPIRV_CROSS_TAG=vulkan-sdk-1.4.363.0
 SPIRV_CROSS_COMMIT=f11ba9f0b21ba8fc15153d50a2a1ae31ab1cf8f7
 
