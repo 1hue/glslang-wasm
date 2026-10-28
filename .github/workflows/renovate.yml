@@ -2,7 +2,7 @@ name: Renovate
 
 on:
   schedule:
-    - cron: '*/10 * * * *' # Monthly
+    - cron: '17 * * * *' # Hourly test
   workflow_dispatch:
 
 permissions:
