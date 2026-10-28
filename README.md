@@ -1,6 +1,4 @@
-# glslang-wasm
-
-[glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
+# [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
 
 Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript. Errors match glslangValidator.
 
