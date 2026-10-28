@@ -191,7 +191,11 @@ export function parseLog(log: string): Diagnostic[] {
 			const [, severity, message] = unlocated;
 			// Skip totals like `1 compilation errors.  No code generated.`
 			if (!TOTALS.test(message)) {
-				diagnostics.push({ severity: severity === 'ERROR' ? 'error' : 'warning', source: '', message });
+				diagnostics.push({
+					severity: severity === 'ERROR' ? 'error' : 'warning',
+					source: '',
+					message,
+				});
 			}
 			continue;
 		}
@@ -212,7 +216,11 @@ export function parseLog(log: string): Diagnostic[] {
 /** Loads glslang.wasm next to glslang.js unless `wasmBinary` is given */
 export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): Promise<Glslang> {
 	const load = async () => {
-		const module = await createModule({ wasmBinary: options.wasmBinary, print() {}, printErr() {} });
+		const module = await createModule({
+			wasmBinary: options.wasmBinary,
+			print() {},
+			printErr() {},
+		});
 		if (!module._initialize()) {
 			throw new Error('glslang initialization failed');
 		}
@@ -240,7 +248,9 @@ export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): 
 		spirv: boolean,
 	): Promise<CompileResult> => {
 		const module = await ready;
-		const [sourcePointer, namePointer, preamblePointer] = [source, name, preamble].map(module.stringToNewUTF8);
+		const [sourcePointer, namePointer, preamblePointer] = [source, name, preamble].map(
+			module.stringToNewUTF8,
+		);
 
 		// Called by check.cpp per `#include`
 		module.resolveInclude = (system, header, includer, depth) => {
@@ -315,7 +325,9 @@ export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): 
 			}
 			return {
 				source: module.UTF8ToString(module._crossCompileSource()),
-				uniforms: JSON.parse(module.UTF8ToString(module._crossCompileUniforms())) as Uniform[],
+				uniforms: JSON.parse(
+					module.UTF8ToString(module._crossCompileUniforms()),
+				) as Uniform[],
 			};
 		},
 

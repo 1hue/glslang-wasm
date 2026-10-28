@@ -69,9 +69,9 @@ int spirvLength() { return static_cast<int>(spirvWords.size()); }
 // forceDefaults: no `#version` in source - glslang only applies defaultProfile when forced
 // spirv: link and generate SPIR-V (needs OpenGL or Vulkan client)
 // autoMap: assign missing locations and bindings like loose uniforms for OpenGL SPIR-V
-const char *check(const char *source, const char *name, int stage, int client, int defaultVersion, int defaultProfile,
-	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults, int spirv,
-	int autoMap) {
+const char *check(const char *source, const char *name, int stage, int client, int defaultVersion,
+	int defaultProfile, int includes, const char *preamble, int vulkanVersion, int spirvVersion,
+	int link, int forceDefaults, int spirv, int autoMap) {
 	auto language = static_cast<EShLanguage>(stage);
 	glslang::TShader shader(language);
 	shader.setAutoMapLocations(autoMap != 0);
@@ -94,22 +94,26 @@ const char *check(const char *source, const char *name, int stage, int client, i
 		shader.setEnvInput(glslang::EShSourceGlsl, language, glslang::EShClientOpenGL, 100);
 		shader.setEnvClient(glslang::EShClientOpenGL, glslang::EShTargetOpenGL_450);
 		shader.setEnvTarget(glslang::EShTargetSpv,
-			spirvVersion ? static_cast<glslang::EShTargetLanguageVersion>(spirvVersion) : glslang::EShTargetSpv_1_0);
+			spirvVersion ? static_cast<glslang::EShTargetLanguageVersion>(spirvVersion)
+						 : glslang::EShTargetSpv_1_0);
 		messages |= EShMsgSpvRules;
 		break;
 	case 2:
 		shader.setEnvInput(glslang::EShSourceGlsl, language, glslang::EShClientVulkan, 100);
 		shader.setEnvClient(glslang::EShClientVulkan,
-			vulkanVersion ? static_cast<glslang::EShTargetClientVersion>(vulkanVersion) : glslang::EShTargetVulkan_1_4);
+			vulkanVersion ? static_cast<glslang::EShTargetClientVersion>(vulkanVersion)
+						  : glslang::EShTargetVulkan_1_4);
 		shader.setEnvTarget(glslang::EShTargetSpv,
-			spirvVersion ? static_cast<glslang::EShTargetLanguageVersion>(spirvVersion) : glslang::EShTargetSpv_1_6);
+			spirvVersion ? static_cast<glslang::EShTargetLanguageVersion>(spirvVersion)
+						 : glslang::EShTargetSpv_1_6);
 		messages |= EShMsgSpvRules | EShMsgVulkanRules;
 		break;
 	}
 
 	Includer includer;
-	bool parsed = shader.parse(GetDefaultResources(), defaultVersion, static_cast<EProfile>(defaultProfile),
-		forceDefaults != 0, false, static_cast<EShMessages>(messages), includer);
+	bool parsed =
+		shader.parse(GetDefaultResources(), defaultVersion, static_cast<EProfile>(defaultProfile),
+			forceDefaults != 0, false, static_cast<EShMessages>(messages), includer);
 
 	infoLog = shader.getInfoLog();
 

@@ -14,7 +14,9 @@ function brief(result: CheckResult) {
 test('reports errors with line and column', async () => {
 	const glslang = await createGlslang();
 
-	const result = await glslang.check(lines('#version 450', 'void main() { foo = 1; }'), { stage: 'fragment' });
+	const result = await glslang.check(lines('#version 450', 'void main() { foo = 1; }'), {
+		stage: 'fragment',
+	});
 
 	assert.deepEqual(brief(result), [[2, 15, "'foo' : undeclared identifier"]]);
 });
@@ -37,9 +39,15 @@ test('defaults apply without #version, including profile', async () => {
 	const glslang = await createGlslang();
 	const source = lines('precision mediump float;', 'void main() { float x = 1; }');
 
-	const result = await glslang.check(source, { stage: 'fragment', defaultVersion: 300, defaultProfile: 'es' });
+	const result = await glslang.check(source, {
+		stage: 'fragment',
+		defaultVersion: 300,
+		defaultProfile: 'es',
+	});
 
-	assert.deepEqual(brief(result), [[2, 21, "'=' :  cannot convert from ' const int' to ' temp mediump float'"]]);
+	assert.deepEqual(brief(result), [
+		[2, 21, "'=' :  cannot convert from ' const int' to ' temp mediump float'"],
+	]);
 });
 
 test('vulkan client: opaque uniforms fine', async () => {
@@ -162,7 +170,9 @@ test('compile errors give diagnostics and no SPIR-V', async () => {
 test('compile without main is a link error and no SPIR-V', async () => {
 	const glslang = await createGlslang();
 
-	const result = await glslang.compile(lines('#version 450', 'void helper() {}'), { stage: 'fragment' });
+	const result = await glslang.compile(lines('#version 450', 'void helper() {}'), {
+		stage: 'fragment',
+	});
 
 	assert.equal(result.spirv, undefined);
 	assert.match(result.diagnostics[0].message, /Missing entry point/);
@@ -179,7 +189,11 @@ test('example compiles to expected SPIR-V', async () => {
 
 	assert.deepEqual(result.diagnostics, []);
 	assert.ok(result.spirv);
-	const bytes = Buffer.from(result.spirv.buffer, result.spirv.byteOffset, result.spirv.byteLength);
+	const bytes = Buffer.from(
+		result.spirv.buffer,
+		result.spirv.byteOffset,
+		result.spirv.byteLength,
+	);
 	if (process.env.UPDATE_FIXTURES) {
 		await writeFile(EXAMPLE_SPIRV, bytes);
 	}
@@ -190,7 +204,9 @@ test('SPIR-V from one compile is not reused by the next', async () => {
 	const glslang = await createGlslang();
 
 	const first = await glslang.compile(COMPUTE, { stage: 'compute' });
-	const failed = await glslang.compile(lines('#version 450', 'void main() { foo; }'), { stage: 'compute' });
+	const failed = await glslang.compile(lines('#version 450', 'void main() { foo; }'), {
+		stage: 'compute',
+	});
 	const checked = await glslang.check(COMPUTE, { stage: 'compute', client: 'vulkan' });
 
 	assert.ok(first.spirv);
@@ -212,7 +228,11 @@ test('deep parentheses hit the parser limit as a normal error', async () => {
 test('recovers with a fresh instance after a stack overflow', async () => {
 	const glslang = await createGlslang();
 	const terms = Array(10000).fill('y').join(' + ');
-	const deep = lines('#version 450', 'out float o;', `void main() { float y = 1.0; o = ${terms}; }`);
+	const deep = lines(
+		'#version 450',
+		'out float o;',
+		`void main() { float y = 1.0; o = ${terms}; }`,
+	);
 	const normal = lines('#version 450', 'void main() { foo; }');
 
 	await assert.rejects(glslang.check(deep, { stage: 'fragment' }), RangeError);
@@ -240,7 +260,8 @@ test('parseLog keeps continuation lines and skips totals', () => {
 		{
 			severity: 'error',
 			source: '',
-			message: 'Linking fragment stage: Missing entry point: Each stage requires one entry point\ncontinued',
+			message:
+				'Linking fragment stage: Missing entry point: Each stage requires one entry point\ncontinued',
 		},
 	]);
 });
@@ -288,7 +309,11 @@ test('loose uniforms compile for OpenGL with autoMap', async () => {
 		'void main() { color = texture(noise, vec2(time)); }',
 	);
 
-	const { diagnostics, spirv } = await glslang.compile(source, { stage: 'fragment', client: 'opengl', autoMap: true });
+	const { diagnostics, spirv } = await glslang.compile(source, {
+		stage: 'fragment',
+		client: 'opengl',
+		autoMap: true,
+	});
 	assert.deepEqual(diagnostics, []);
 	assert.ok(spirv);
 	const result = await glslang.crossCompile(spirv, ES);

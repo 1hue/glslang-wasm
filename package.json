@@ -1,45 +1,45 @@
 {
-  "name": "glslang-wasm",
-  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V or WebGL with JavaScript",
-  "keywords": [
-    "glsl",
-    "glslang",
-    "spirv-cross",
-    "glsl-shaders",
-    "glsl-shader",
-    "shaders",
-    "spirv",
-    "vulkan",
-    "opengl",
-    "webgl",
-    "webgl2",
-    "wasm",
-    "webassembly",
-    "emscripten",
-    "linter",
-    "compiler"
-  ],
-  "license": "MIT AND LicenseRef-glslang AND Apache-2.0",
-  "author": "1hue (https://github.com/1hue)",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/1hue/glslang-wasm"
-  },
-  "type": "module",
-  "exports": {
-    "types": "./dist/index.d.ts",
-    "default": "./dist/index.js"
-  },
-  "scripts": {
-    "build:ts": "tsc",
-    "test": "node --test test/*.test.mts"
-  },
-  "files": [
-    "dist",
-    "LICENSE*"
-  ],
-  "devDependencies": {
-    "prettier": "3.9.10",
-    "typescript": "^7.0.2"
-  }
+	"name": "glslang-wasm",
+	"description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V or WebGL with JavaScript",
+	"keywords": [
+		"glsl",
+		"glslang",
+		"spirv-cross",
+		"glsl-shaders",
+		"glsl-shader",
+		"shaders",
+		"spirv",
+		"vulkan",
+		"opengl",
+		"webgl",
+		"webgl2",
+		"wasm",
+		"webassembly",
+		"emscripten",
+		"linter",
+		"compiler"
+	],
+	"license": "MIT AND LicenseRef-glslang AND Apache-2.0",
+	"author": "1hue (https://github.com/1hue)",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/1hue/glslang-wasm"
+	},
+	"type": "module",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"default": "./dist/index.js"
+	},
+	"scripts": {
+		"build:ts": "tsc",
+		"test": "node --test test/*.test.mts"
+	},
+	"files": [
+		"dist",
+		"LICENSE*"
+	],
+	"devDependencies": {
+		"prettier": "3.9.10",
+		"typescript": "^7.0.2"
+	}
 }

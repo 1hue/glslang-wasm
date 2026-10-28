@@ -27,7 +27,8 @@ static std::string typeName(const SPIRType &type) {
 		default:
 			return "";
 		}
-		return "sampler" + dimension + (type.image.arrayed ? "Array" : "") + (type.image.depth ? "Shadow" : "");
+		return "sampler" + dimension + (type.image.arrayed ? "Array" : "") +
+			(type.image.depth ? "Shadow" : "");
 	}
 
 	std::string scalar;
@@ -54,7 +55,8 @@ static std::string typeName(const SPIRType &type) {
 
 	if (type.columns > 1) {
 		std::string columns = std::to_string(type.columns);
-		return type.columns == type.vecsize ? "mat" + columns : "mat" + columns + "x" + std::to_string(type.vecsize);
+		return type.columns == type.vecsize ? "mat" + columns
+											: "mat" + columns + "x" + std::to_string(type.vecsize);
 	}
 	return type.vecsize == 1 ? scalar : prefix + "vec" + std::to_string(type.vecsize);
 }
@@ -69,33 +71,38 @@ struct Entry {
 	unsigned size;
 };
 
-static void addEntry(std::vector<Entry> &entries, uint32_t id, uint32_t blockType, int member, const std::string &label,
-	const SPIRType &type) {
+static void addEntry(std::vector<Entry> &entries, uint32_t id, uint32_t blockType, int member,
+	const std::string &label, const SPIRType &type) {
 	std::string kind = typeName(type);
 	if (!kind.empty()) {
-		entries.push_back({id, blockType, member, label, kind, type.array.empty() ? 1u : type.array[0]});
+		entries.push_back(
+			{id, blockType, member, label, kind, type.array.empty() ? 1u : type.array[0]});
 	}
 }
 
-static void addBlock(CompilerGLSL &compiler, std::vector<Entry> &entries, const Resource &resource) {
+static void addBlock(
+	CompilerGLSL &compiler, std::vector<Entry> &entries, const Resource &resource) {
 	const SPIRType &block = compiler.get_type(resource.base_type_id);
 	for (uint32_t index = 0; index < block.member_types.size(); index++) {
 		addEntry(entries, resource.id, resource.base_type_id, static_cast<int>(index),
-			compiler.get_member_name(resource.base_type_id, index), compiler.get_type(block.member_types[index]));
+			compiler.get_member_name(resource.base_type_id, index),
+			compiler.get_type(block.member_types[index]));
 	}
 }
 
-/** Uniform list like `[{"name":"block.color","label":"color","type":"vec3","size":1}]`. Names as in output */
+/** Uniform list like `[{"name":"block.color","label":"color","type":"vec3","size":1}]`. Names as in
+ * output */
 static std::string toJson(CompilerGLSL &compiler, const std::vector<Entry> &entries) {
 	std::string json = "[";
 	for (const Entry &entry : entries) {
 		std::string name = compiler.get_name(entry.id);
 		if (entry.member >= 0) {
-			name += "." + compiler.get_member_name(entry.blockType, static_cast<uint32_t>(entry.member));
+			name += "." +
+				compiler.get_member_name(entry.blockType, static_cast<uint32_t>(entry.member));
 		}
 		json += json.size() > 1 ? "," : "";
-		json += "{\"name\":\"" + name + "\",\"label\":\"" + entry.label + "\",\"type\":\"" + entry.type +
-			"\",\"size\":" + std::to_string(entry.size) + "}";
+		json += "{\"name\":\"" + name + "\",\"label\":\"" + entry.label + "\",\"type\":\"" +
+			entry.type + "\",\"size\":" + std::to_string(entry.size) + "}";
 	}
 	return json + "]";
 }
@@ -145,7 +152,8 @@ const char *crossCompile(const uint32_t *words, int length, int version, int es)
 		// Read labels first - compile renames reserved words like `noise`
 		std::vector<Entry> entries;
 		for (const Resource &resource : resources.gl_plain_uniforms) {
-			addEntry(entries, resource.id, 0, -1, compiler.get_name(resource.id), compiler.get_type(resource.type_id));
+			addEntry(entries, resource.id, 0, -1, compiler.get_name(resource.id),
+				compiler.get_type(resource.type_id));
 		}
 		for (const Resource &resource : resources.uniform_buffers) {
 			addBlock(compiler, entries, resource);
@@ -154,7 +162,8 @@ const char *crossCompile(const uint32_t *words, int length, int version, int es)
 			addBlock(compiler, entries, resource);
 		}
 		for (const Resource &resource : resources.sampled_images) {
-			addEntry(entries, resource.id, 0, -1, compiler.get_name(resource.id), compiler.get_type(resource.type_id));
+			addEntry(entries, resource.id, 0, -1, compiler.get_name(resource.id),
+				compiler.get_type(resource.type_id));
 		}
 		for (const CombinedImageSampler &combined : compiler.get_combined_image_samplers()) {
 			addEntry(entries, combined.combined_id, 0, -1, compiler.get_name(combined.combined_id),

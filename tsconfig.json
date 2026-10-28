@@ -1,13 +1,13 @@
 {
-  "compilerOptions": {
-    "module": "NodeNext",
-    "target": "ES2022",
-    "lib": ["ES2022"],
-    "types": [],
-    "strict": true,
-    "declaration": true,
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src"]
+	"compilerOptions": {
+		"module": "NodeNext",
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"types": [],
+		"strict": true,
+		"declaration": true,
+		"rootDir": "src",
+		"outDir": "dist"
+	},
+	"include": ["src"]
 }
