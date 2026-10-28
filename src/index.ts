@@ -99,7 +99,7 @@ export interface Diagnostic {
 	source: string;
 	/** 1-based. None for link errors */
 	line?: number;
-	/** 1-based, when glslang reports one */
+	/** 1-based, when glslang reports it */
 	column?: number;
 	message: string;
 }
