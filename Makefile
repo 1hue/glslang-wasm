@@ -1,5 +1,5 @@
 # Development commands in containers
-.PHONY: build build-ts test format clang-image sh clean
+.PHONY: build build-ts test format clang-image sh clean clean-npm
 
 # Colors when run in terminal
 TTY := $(shell [ -t 0 ] && echo -t)
