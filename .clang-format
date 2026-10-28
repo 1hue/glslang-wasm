@@ -3,7 +3,7 @@ UseTab: ForContinuationAndIndentation
 IndentWidth: 4
 TabWidth: 4
 ContinuationIndentWidth: 4
-ColumnLimit: 120
+ColumnLimit: 100
 AccessModifierOffset: -4
 AlignAfterOpenBracket: DontAlign
 AlignOperands: DontAlign

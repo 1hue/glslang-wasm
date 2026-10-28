@@ -1,0 +1,5 @@
+dist/
+LICENSES/
+test/fixtures/
+package-lock.json
+*.md

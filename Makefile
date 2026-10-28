@@ -24,11 +24,12 @@ build-ts:
 test:
 	$(RUN_OFFLINE) $(NODE) npm test
 
-# Format C++ sources
+# Format TS and C++ sourcecode
 format:
 	$(PODMAN) $(ALPINE) sh -c 'apk add clang-extra-tools && clang-format -i src/*.cpp'
+	$(RUN_OFFLINE) $(NODE) npx prettier --write .
 
-# Shell into container with colored ls and prompt
+# Shell into container with colored ls and prompt (Debian defaults)
 sh:
 	$(RUN) $(NODE) bash --rcfile /etc/skel/.bashrc
 
