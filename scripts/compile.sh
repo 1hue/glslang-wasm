@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build dist/ and third-party licenses in Emscripten container, see Makefile
+# Build dist/ and third-party licenses, see Makefile
 set -eu
 cd "$(dirname "$0")/.."
 
