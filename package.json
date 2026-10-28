@@ -20,7 +20,7 @@
 		"compiler"
 	],
 	"license": "MIT AND LicenseRef-glslang AND Apache-2.0",
-	"author": "1hue (https://github.com/1hue)",
+	"author": "1hue (https://1hue.dev)",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/1hue/glslang-wasm"
