@@ -1,4 +1,4 @@
-// SPIR-V to GLSL with SPIRV-Cross, plus uniform list for UIs
+// SPIR-V to GLSL and uniform list with SPIRV-Cross
 
 #include <spirv_glsl.hpp>
 
@@ -10,7 +10,7 @@ using namespace spirv_cross;
 static std::string crossSource;
 static std::string crossUniforms;
 
-/** `float`, `vec3`, `mat4`, `sampler2D` etc. Empty for types a UI can't set */
+/** Empty for types a UI can't set */
 static std::string typeName(const SPIRType &type) {
 	if (type.basetype == SPIRType::SampledImage || type.basetype == SPIRType::Image) {
 		std::string dimension;
@@ -59,7 +59,7 @@ static std::string typeName(const SPIRType &type) {
 	return type.vecsize == 1 ? scalar : prefix + "vec" + std::to_string(type.vecsize);
 }
 
-/** Variable, or member of block emitted as plain struct uniform */
+// Variable or member of block emitted as plain struct uniform
 struct Entry {
 	uint32_t id;
 	uint32_t blockType;
@@ -85,7 +85,7 @@ static void addBlock(CompilerGLSL &compiler, std::vector<Entry> &entries, const 
 	}
 }
 
-/** `[{"name":"block.color","label":"color","type":"vec3","size":1}]` - name as in output, after renames */
+/** Uniform list like `[{"name":"block.color","label":"color","type":"vec3","size":1}]`. Names as in output */
 static std::string toJson(CompilerGLSL &compiler, const std::vector<Entry> &entries) {
 	std::string json = "[";
 	for (const Entry &entry : entries) {
@@ -108,7 +108,7 @@ const char *crossCompileSource() { return crossSource.c_str(); }
 // JSON uniform list from last crossCompile
 const char *crossCompileUniforms() { return crossUniforms.c_str(); }
 
-// version: GLSL version, e.g. 300. es: GLSL ES
+// version: GLSL version like 300. es: GLSL ES
 // Returns 0 on success, else error message
 const char *crossCompile(const uint32_t *words, int length, int version, int es) {
 	try {
@@ -123,14 +123,14 @@ const char *crossCompile(const uint32_t *words, int length, int version, int es)
 		options.fragment.default_int_precision = CompilerGLSL::Options::Highp;
 		compiler.set_common_options(options);
 
-		// Separate texture + sampler -> sampler2D named after texture
+		// Combine separate texture and sampler into sampler2D named after texture
 		compiler.build_combined_image_samplers();
 		for (const CombinedImageSampler &combined : compiler.get_combined_image_samplers()) {
 			compiler.set_name(combined.combined_id, compiler.get_name(combined.image_id));
 		}
 
 		ShaderResources resources = compiler.get_shader_resources();
-		// Anonymous blocks (`uniform Block { ... };`) get instance named after block
+		// Anonymous blocks like `uniform Block { ... }` get instance named after block
 		for (const Resource &resource : resources.uniform_buffers) {
 			if (compiler.get_name(resource.id).empty()) {
 				compiler.set_name(resource.id, compiler.get_name(resource.base_type_id) + "_");
@@ -142,7 +142,7 @@ const char *crossCompile(const uint32_t *words, int length, int version, int es)
 			}
 		}
 
-		// Labels before compile - it renames reserved words, e.g. `noise` -> `_noise`
+		// Read labels first - compile renames reserved words like `noise`
 		std::vector<Entry> entries;
 		for (const Resource &resource : resources.gl_plain_uniforms) {
 			addEntry(entries, resource.id, 0, -1, compiler.get_name(resource.id), compiler.get_type(resource.type_id));

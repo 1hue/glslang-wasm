@@ -22,7 +22,7 @@ export type Client = 'none' | 'opengl' | 'vulkan';
 export type Profile = 'none' | 'core' | 'compatibility' | 'es';
 
 export interface Include {
-	/** Resolved name, used as `includer` for nested includes and in diagnostics */
+	/** Resolved name used as `includer` for nested includes and in diagnostics */
 	name: string;
 	source: string;
 }
@@ -44,7 +44,7 @@ export interface CheckOptions {
 	name?: string;
 	/** Enables `#include` (GL_GOOGLE_include_directive, no `#extension` needed) */
 	include?: IncludeResolver;
-	/** Text before the source (after `#version`), e.g. declarations. Not part of source line numbers */
+	/** Declarations or other text between `#version` and source. Not part of source line numbers */
 	preamble?: string;
 	/** Default `none` */
 	client?: Client;
@@ -62,23 +62,23 @@ export interface CheckOptions {
 
 /** Client `vulkan` by default, `none` can't produce SPIR-V. Always links */
 export interface CompileOptions extends Omit<CheckOptions, 'link'> {
-	/** Assign missing locations and bindings, e.g. loose `uniform float x;` with client `opengl`. Default false */
+	/** Assign missing locations and bindings like loose `uniform float x` with client `opengl`. Default false */
 	autoMap?: boolean;
 }
 
 export interface CrossCompileOptions {
-	/** GLSL version of output, e.g. 300 for WebGL2 */
+	/** GLSL version of output like 300 for WebGL2 */
 	version: number;
 	/** GLSL ES output */
 	es: boolean;
 }
 
 export interface Uniform {
-	/** Name in output source, e.g. `block.color` for block members */
+	/** Name in output source like `block.color` for block members */
 	name: string;
-	/** Name as declared, e.g. `color` */
+	/** Name as declared like `color` */
 	label: string;
-	/** GLSL type, e.g. `float`, `vec3`, `mat4`, `sampler2D` */
+	/** GLSL type like `float`, `vec3`, `mat4`, `sampler2D` */
 	type: string;
 	/** Array length, 1 if not an array */
 	size: number;
@@ -89,7 +89,7 @@ export interface CrossCompileResult {
 	source?: string;
 	/** Settable uniforms and samplers */
 	uniforms: Uniform[];
-	/** SPIRV-Cross error, e.g. a feature the output version lacks */
+	/** SPIRV-Cross error like unsupported feature */
 	error?: string;
 }
 
@@ -99,7 +99,7 @@ export interface Diagnostic {
 	source: string;
 	/** 1-based. None for link errors */
 	line?: number;
-	/** 1-based, when glslang reports it */
+	/** 1-based when glslang reports it */
 	column?: number;
 	message: string;
 }
@@ -111,7 +111,7 @@ export interface CheckResult {
 }
 
 export interface CompileResult extends CheckResult {
-	/** SPIR-V words. None when there are errors */
+	/** SPIR-V words */
 	spirv?: Uint32Array;
 }
 
@@ -123,7 +123,7 @@ export interface Glslang {
 	check(source: string, options: CheckOptions): Promise<CheckResult>;
 	/** Check, link and generate SPIR-V. Same blocking and recovery as check */
 	compile(source: string, options: CompileOptions): Promise<CompileResult>;
-	/** SPIR-V to GLSL with SPIRV-Cross, e.g. GLSL ES 3.00 for WebGL2 */
+	/** SPIR-V to GLSL with SPIRV-Cross */
 	crossCompile(spirv: Uint32Array, options: CrossCompileOptions): Promise<CrossCompileResult>;
 	dispose(): Promise<void>;
 }
@@ -150,24 +150,21 @@ const CLIENTS: Record<Client, number> = { none: 0, opengl: 1, vulkan: 2 };
 // EProfile bits
 const PROFILES: Record<Profile, number> = { none: 1, core: 2, compatibility: 4, es: 8 };
 
-/**
- * `ERROR: 0:12:5: 'foo' : undeclared identifier`
- * `WARNING: 0:3: '#extension' : extension not supported: GL_FOO`
- */
+// e.g. `ERROR: 0:12:5: 'foo' : undeclared identifier`
 const LOCATED = /^(ERROR|WARNING): (.*?):(\d+):(?:(\d+):)? (.*)$/;
-// `ERROR: Linking fragment stage: Missing entry point: ...`
+// e.g. `ERROR: Linking fragment stage: Missing entry point: ...`
 const UNLOCATED = /^(ERROR|WARNING): (.*)$/;
 const TOTALS = /^\d+ compilation errors\./;
 
 // Without `#version`, default version and profile are forced
 const VERSION = /^[ \t]*#[ \t]*version\b/m;
 
-/** `1.4` -> EShTargetClientVersion, 0 for default */
+/** EShTargetClientVersion, 0 for default */
 function vulkanTarget(version?: string): number {
 	return version ? (1 << 22) | (Number(version.split('.')[1]) << 12) : 0;
 }
 
-/** `1.4` -> EShTargetLanguageVersion, 0 for default */
+/** EShTargetLanguageVersion, 0 for default */
 function spirvTarget(version?: string): number {
 	return version ? (1 << 16) | (Number(version.split('.')[1]) << 8) : 0;
 }
@@ -212,7 +209,7 @@ export function parseLog(log: string): Diagnostic[] {
 	return diagnostics;
 }
 
-/** `wasmBinary`: bytes of glslang.wasm, otherwise loaded next to glslang.js */
+/** Loads glslang.wasm next to glslang.js unless `wasmBinary` is given */
 export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): Promise<Glslang> {
 	const load = async () => {
 		const module = await createModule({ wasmBinary: options.wasmBinary, print() {}, printErr() {} });

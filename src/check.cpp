@@ -1,4 +1,4 @@
-// Single-stage GLSL check, optionally linked and compiled to SPIR-V
+// Single-stage GLSL check with optional link and SPIR-V
 
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-// Module.resolveInclude from index.js: malloc'd `name\0source`, or 0 if not found
+// Module.resolveInclude from index.js: malloc'd `name\0source` or 0
 EM_JS(char *, resolveInclude, (int system, const char *header, const char *includer, int depth),
 	{ return Module.resolveInclude(system, UTF8ToString(header), UTF8ToString(includer), depth); });
 
@@ -53,7 +53,7 @@ int initialize() { return glslang::InitializeProcess(); }
 
 void finalize() { glslang::FinalizeProcess(); }
 
-// SPIR-V from last check with spirv set, empty on errors
+// SPIR-V from last check with spirv set
 const unsigned int *spirvData() { return spirvWords.data(); }
 
 int spirvLength() { return static_cast<int>(spirvWords.size()); }
@@ -63,12 +63,12 @@ int spirvLength() { return static_cast<int>(spirvWords.size()); }
 // client: 0 none, 1 OpenGL, 2 Vulkan
 // defaultProfile: EProfile, used without `#version`
 // includes: enable `#include` via Module.resolveInclude
-// preamble: text before source, outside its line numbering
+// preamble: text before source outside its line numbering
 // vulkanVersion, spirvVersion: EShTargetClientVersion, EShTargetLanguageVersion, 0 for defaults
 // link: also link as single-stage program (missing entry point etc.)
 // forceDefaults: no `#version` in source - glslang only applies defaultProfile when forced
 // spirv: link and generate SPIR-V (needs OpenGL or Vulkan client)
-// autoMap: assign missing locations and bindings, e.g. loose uniforms for OpenGL SPIR-V
+// autoMap: assign missing locations and bindings like loose uniforms for OpenGL SPIR-V
 const char *check(const char *source, const char *name, int stage, int client, int defaultVersion, int defaultProfile,
 	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults, int spirv,
 	int autoMap) {

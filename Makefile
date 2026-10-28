@@ -8,11 +8,11 @@ RUN = podman run --rm $(TTY) --pull=newer --userns=keep-id -e HOME=/tmp -v .:/w:
 NODE = docker.io/library/node:latest
 EMSDK = docker.io/emscripten/emsdk:6.0.13
 
-# dist/ - WASM and loader
+# Build WASM and loader into dist/
 build:
 	$(RUN) $(EMSDK) sh scripts/compile.sh
 
-# Loader only, no WASM rebuild
+# Build loader only
 build-ts:
 	$(RUN) $(NODE) sh -c 'npm ci && npm run build:ts'
 
@@ -24,7 +24,7 @@ format:
 	podman run --rm $(TTY) --pull=newer -v .:/w:Z -w /w docker.io/library/alpine:latest \
 		sh -c 'apk add clang-extra-tools && clang-format -i src/*.cpp'
 
-# Shell into container, colored ls and prompt
+# Shell into container with colored ls and prompt
 sh:
 	$(RUN) -i -e TERM $(NODE) bash --rcfile /etc/skel/.bashrc
 

@@ -1,7 +1,6 @@
 #!/bin/sh
 # Build dist/ and third-party licenses, see Makefile
 set -eu
-cd "$(dirname "$0")/.."
 
 GLSLANG_TAG=16.6.0
 GLSLANG_COMMIT=e1b562a8bed273a02f30b59b66a5d499793cede5
