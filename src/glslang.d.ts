@@ -18,10 +18,17 @@ export interface GlslangModule {
 		link: number,
 		forceDefaults: number,
 		spirv: number,
+		autoMap: number,
 	): number;
 	/** SPIR-V words from last check with spirv set */
 	_spirvData(): number;
 	_spirvLength(): number;
+	/** Returns 0, else pointer to error message */
+	_crossCompile(words: number, length: number, version: number, es: number): number;
+	_crossCompileSource(): number;
+	/** JSON uniform list */
+	_crossCompileUniforms(): number;
+	_malloc(size: number): number;
 	_free(pointer: number): void;
 	HEAPU32: Uint32Array;
 	stringToNewUTF8(text: string): number;

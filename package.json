@@ -1,9 +1,10 @@
 {
   "name": "glslang-wasm",
-  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V with JavaScript",
+  "description": "glslang in WebAssembly - validate your shaders and compile to SPIR-V or WebGL with JavaScript",
   "keywords": [
     "glsl",
     "glslang",
+    "spirv-cross",
     "glsl-shaders",
     "glsl-shader",
     "shaders",
@@ -18,7 +19,7 @@
     "linter",
     "compiler"
   ],
-  "license": "MIT AND LicenseRef-glslang",
+  "license": "MIT AND LicenseRef-glslang AND Apache-2.0",
   "author": "1hue (https://github.com/1hue)",
   "repository": {
     "type": "git",

@@ -244,3 +244,78 @@ test('parseLog keeps continuation lines and skips totals', () => {
 		},
 	]);
 });
+
+const ES = { version: 300, es: true };
+
+test('Vulkan blocks, push constants and separate samplers cross-compile to GLSL ES 3.00', async () => {
+	const glslang = await createGlslang();
+	const source = lines(
+		'#version 460',
+		'layout(set = 0, binding = 0) uniform Material { vec3 color; float roughness; } material;',
+		'layout(push_constant) uniform Push { float scale; };',
+		'layout(set = 0, binding = 1) uniform texture2D albedo;',
+		'layout(set = 0, binding = 2) uniform sampler linear;',
+		'layout(location = 0) in vec2 vUv;',
+		'layout(location = 0) out vec4 color;',
+		'void main() { color = texture(sampler2D(albedo, linear), vUv) * vec4(material.color * scale, material.roughness); }',
+	);
+
+	const { spirv } = await glslang.compile(source, { stage: 'fragment' });
+	assert.ok(spirv);
+	const result = await glslang.crossCompile(spirv, ES);
+
+	assert.equal(result.error, undefined);
+	assert.match(result.source ?? '', /^#version 300 es/);
+	assert.doesNotMatch(result.source ?? '', /binding|set =/);
+	assert.deepEqual(
+		result.uniforms.map((u) => [u.name, u.label, u.type]),
+		[
+			['material.color', 'color', 'vec3'],
+			['material.roughness', 'roughness', 'float'],
+			['Push_.scale', 'scale', 'float'],
+			['albedo', 'albedo', 'sampler2D'],
+		],
+	);
+});
+
+test('loose uniforms compile for OpenGL with autoMap', async () => {
+	const glslang = await createGlslang();
+	const source = lines(
+		'#version 330',
+		'uniform float time;',
+		'uniform sampler2D noise;',
+		'out vec4 color;',
+		'void main() { color = texture(noise, vec2(time)); }',
+	);
+
+	const { diagnostics, spirv } = await glslang.compile(source, { stage: 'fragment', client: 'opengl', autoMap: true });
+	assert.deepEqual(diagnostics, []);
+	assert.ok(spirv);
+	const result = await glslang.crossCompile(spirv, ES);
+
+	// `noise` is reserved in SPIRV-Cross output - renamed, label keeps declared name
+	assert.deepEqual(
+		result.uniforms.map((u) => [u.name, u.label, u.type]),
+		[
+			['time', 'time', 'float'],
+			['_noise', 'noise', 'sampler2D'],
+		],
+	);
+});
+
+test('features missing in output version are cross-compile errors', async () => {
+	const glslang = await createGlslang();
+	const source = lines(
+		'#version 460',
+		'layout(location = 0) out vec4 color;',
+		'layout(push_constant) uniform Push { double scale; };',
+		'void main() { color = vec4(float(scale * 2.0lf)); }',
+	);
+
+	const { spirv } = await glslang.compile(source, { stage: 'fragment' });
+	assert.ok(spirv);
+	const result = await glslang.crossCompile(spirv, ES);
+
+	assert.equal(result.source, undefined);
+	assert.ok(result.error);
+});

@@ -2,14 +2,14 @@
 
 Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
 
-Checks your GLSL shaders for errors and compiles them to SPIR-V from JavaScript. Errors match glslangValidator word for word.
+Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript. Errors match glslangValidator word for word.
 
 - Nothing else to install
 - Handles OpenGL, Vulkan, ES, `#include`
-- Runs in Node (used in [glsl-vscode](https://github.com/1hue/glsl-vscode)), browsers and web workers <sup>[🔗](scripts/compile.sh#L37)</sup>
+- Runs in Node (used in [glsl-vscode](https://github.com/1hue/glsl-vscode)), browsers and web workers <sup>[🔗](scripts/compile.sh#L56)</sup>
 
 > [!NOTE]
-> Built from Khronos glslang [16.6.0](https://github.com/KhronosGroup/glslang/releases/tag/16.6.0), see [compile.sh](scripts/compile.sh).
+> Built from Khronos glslang [16.6.0](https://github.com/KhronosGroup/glslang/releases/tag/16.6.0) and SPIRV-Cross [vulkan-sdk-1.4.363.0](https://github.com/KhronosGroup/SPIRV-Cross/releases/tag/vulkan-sdk-1.4.363.0), see [compile.sh](scripts/compile.sh).
 
 ## Usage
 
@@ -24,6 +24,7 @@ import { createGlslang } from 'glslang-wasm';
 const glslang = await createGlslang();
 const { diagnostics } = await glslang.check(source, { stage: 'fragment' });
 const { spirv } = await glslang.compile(source, { stage: 'fragment' }); // Uint32Array
+const { source: webgl, uniforms } = await glslang.crossCompile(spirv, { version: 300, es: true });
 ```
 
 <details>
@@ -63,6 +64,22 @@ check(source: string, options: {
   // Default false, compile() always links
   link?: boolean;
 });
+
+compile(source: string, options: {
+  // Same as check() without link, plus:
+  // Assign missing locations and bindings, e.g. loose `uniform float x;` with client opengl
+  autoMap?: boolean;
+});
+
+crossCompile(spirv: Uint32Array, options: {
+  // Output GLSL version, e.g. 300 for WebGL2
+  version: number;
+  es: boolean;
+});
+// Returns { source, uniforms, error }
+// Uniform blocks and push constants become plain struct uniforms
+// uniforms: [{ name: 'material.color', label: 'color', type: 'vec3', size: 1 }, ...]
+// error: e.g. a feature the output version lacks
 ```
 
 </details>
@@ -70,4 +87,4 @@ check(source: string, options: {
 ## License
 
 - [MIT](LICENSE)
-- `dist/` is under [glslang](LICENSE-glslang), [Emscripten](LICENSE-emscripten), [musl](LICENSE-musl) licenses
+- `dist/` is under [glslang](LICENSE-glslang), [SPIRV-Cross](LICENSE-spirv-cross), [Emscripten](LICENSE-emscripten), [musl](LICENSE-musl) licenses

@@ -9,6 +9,7 @@ Needs podman only.
 | `make build` | Build `dist/` |
 | `make build-ts` | Build loader `src/index.ts`, no WASM rebuild |
 | `make test` | Run tests |
+| `make format` | Format C++ with clang-format |
 
 > [!NOTE]
 > | Commands | | |

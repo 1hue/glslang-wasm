@@ -12,9 +12,8 @@
 #include <vector>
 
 // Module.resolveInclude from index.js: malloc'd `name\0source`, or 0 if not found
-EM_JS(char *, resolveInclude, (int system, const char *header, const char *includer, int depth), {
-	return Module.resolveInclude(system, UTF8ToString(header), UTF8ToString(includer), depth);
-});
+EM_JS(char *, resolveInclude, (int system, const char *header, const char *includer, int depth),
+	{ return Module.resolveInclude(system, UTF8ToString(header), UTF8ToString(includer), depth); });
 
 class Includer : public glslang::TShader::Includer {
 public:
@@ -69,10 +68,14 @@ int spirvLength() { return static_cast<int>(spirvWords.size()); }
 // link: also link as single-stage program (missing entry point etc.)
 // forceDefaults: source has no `#version`. glslang only applies defaultProfile when forced
 // spirv: link and generate SPIR-V (needs OpenGL or Vulkan client)
+// autoMap: assign missing locations and bindings, e.g. loose uniforms for OpenGL SPIR-V
 const char *check(const char *source, const char *name, int stage, int client, int defaultVersion, int defaultProfile,
-	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults, int spirv) {
+	int includes, const char *preamble, int vulkanVersion, int spirvVersion, int link, int forceDefaults, int spirv,
+	int autoMap) {
 	auto language = static_cast<EShLanguage>(stage);
 	glslang::TShader shader(language);
+	shader.setAutoMapLocations(autoMap != 0);
+	shader.setAutoMapBindings(autoMap != 0);
 
 	if (*name) {
 		shader.setStringsWithLengthsAndNames(&source, nullptr, &name, 1);
@@ -105,8 +108,8 @@ const char *check(const char *source, const char *name, int stage, int client, i
 	}
 
 	Includer includer;
-	bool parsed = shader.parse(GetDefaultResources(), defaultVersion, static_cast<EProfile>(defaultProfile), forceDefaults != 0, false,
-		static_cast<EShMessages>(messages), includer);
+	bool parsed = shader.parse(GetDefaultResources(), defaultVersion, static_cast<EProfile>(defaultProfile),
+		forceDefaults != 0, false, static_cast<EShMessages>(messages), includer);
 
 	infoLog = shader.getInfoLog();
 
@@ -116,11 +119,10 @@ const char *check(const char *source, const char *name, int stage, int client, i
 		program.addShader(&shader);
 		bool linked = program.link(static_cast<EShMessages>(messages));
 		infoLog += program.getInfoLog();
-		if (spirv && linked) {
+		if (spirv && linked && (!autoMap || program.mapIO())) {
 			glslang::GlslangToSpv(*program.getIntermediate(language), spirvWords);
 		}
 	}
 	return infoLog.c_str();
 }
-
 }

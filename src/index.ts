@@ -61,7 +61,37 @@ export interface CheckOptions {
 }
 
 /** Client `vulkan` by default, `none` can't produce SPIR-V. Always links */
-export type CompileOptions = Omit<CheckOptions, 'link'>;
+export interface CompileOptions extends Omit<CheckOptions, 'link'> {
+	/** Assign missing locations and bindings, e.g. loose `uniform float x;` with client `opengl`. Default false */
+	autoMap?: boolean;
+}
+
+export interface CrossCompileOptions {
+	/** GLSL version of output, e.g. 300 for WebGL2 */
+	version: number;
+	/** GLSL ES output */
+	es: boolean;
+}
+
+export interface Uniform {
+	/** Name in output source, e.g. `block.color` for block members */
+	name: string;
+	/** Name as declared, e.g. `color` */
+	label: string;
+	/** GLSL type, e.g. `float`, `vec3`, `mat4`, `sampler2D` */
+	type: string;
+	/** Array length, 1 if not an array */
+	size: number;
+}
+
+export interface CrossCompileResult {
+	/** Output GLSL. Uniform blocks and push constants become plain struct uniforms */
+	source?: string;
+	/** Settable uniforms and samplers */
+	uniforms: Uniform[];
+	/** SPIRV-Cross error, e.g. a feature the output version lacks */
+	error?: string;
+}
 
 export interface Diagnostic {
 	severity: 'error' | 'warning';
@@ -93,6 +123,8 @@ export interface Glslang {
 	check(source: string, options: CheckOptions): Promise<CheckResult>;
 	/** Check, link and generate SPIR-V. Same blocking and recovery as check */
 	compile(source: string, options: CompileOptions): Promise<CompileResult>;
+	/** SPIR-V to GLSL with SPIRV-Cross, e.g. GLSL ES 3.00 for WebGL2 */
+	crossCompile(spirv: Uint32Array, options: CrossCompileOptions): Promise<CrossCompileResult>;
 	dispose(): Promise<void>;
 }
 
@@ -206,7 +238,8 @@ export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): 
 			vulkanVersion,
 			spirvVersion,
 			link = false,
-		}: CheckOptions,
+			autoMap = false,
+		}: CheckOptions & { autoMap?: boolean },
 		spirv: boolean,
 	): Promise<CompileResult> => {
 		const module = await ready;
@@ -235,6 +268,7 @@ export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): 
 					link ? 1 : 0,
 					VERSION.test(source) ? 0 : 1,
 					spirv ? 1 : 0,
+					autoMap ? 1 : 0,
 				),
 			);
 		} catch (error) {
@@ -263,6 +297,29 @@ export async function createGlslang(options: { wasmBinary?: Uint8Array } = {}): 
 
 		async compile(source, options) {
 			return run(source, { client: 'vulkan', ...options }, true);
+		},
+
+		async crossCompile(spirv, { version, es }) {
+			const module = await ready;
+			const words = module._malloc(spirv.length * 4);
+			module.HEAPU32.set(spirv, words / 4);
+
+			let error: number;
+			try {
+				error = module._crossCompile(words, spirv.length, version, es ? 1 : 0);
+			} catch (thrown) {
+				ready = load();
+				throw thrown;
+			}
+			module._free(words);
+
+			if (error) {
+				return { uniforms: [], error: module.UTF8ToString(error) };
+			}
+			return {
+				source: module.UTF8ToString(module._crossCompileSource()),
+				uniforms: JSON.parse(module.UTF8ToString(module._crossCompileUniforms())) as Uniform[],
+			};
 		},
 
 		async dispose() {
