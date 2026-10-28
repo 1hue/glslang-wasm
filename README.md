@@ -2,7 +2,7 @@
 
 Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
 
-Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript. Errors match glslangValidator word for word.
+Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript. Errors match glslangValidator.
 
 - Nothing else to install
 - Handles OpenGL, Vulkan, ES, `#include`
