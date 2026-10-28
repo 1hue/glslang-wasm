@@ -13,8 +13,7 @@ jobs:
     name: Renovate
     runs-on: ubuntu-latest
     steps:
-      # Fine-grained token - PRs from GITHUB_TOKEN don't trigger CI
-      - uses: renovatebot/github-action@v46
+      - uses: renovatebot/github-action@v46.3.10
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
