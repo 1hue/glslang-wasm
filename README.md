@@ -1,15 +1,15 @@
 # glslang-wasm
 
-Unmodified [glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
+[glslang](https://github.com/KhronosGroup/glslang) but in WebAssembly.
 
 Checks your GLSL shaders for errors and compiles them via SPIR-V from JavaScript. Errors match glslangValidator.
 
-- Nothing else to install
+- Nothing else to install and no unnecessary deps
 - Handles OpenGL, Vulkan, ES, `#include`
 - Runs in Node (used in [glsl-vscode](https://github.com/1hue/glsl-vscode)), browsers and web workers <sup>[🔗](scripts/compile.sh#L56)</sup>
 
 > [!NOTE]
-> Built from Khronos glslang [16.6.0](https://github.com/KhronosGroup/glslang/releases/tag/16.6.0) and SPIRV-Cross [vulkan-sdk-1.4.363.0](https://github.com/KhronosGroup/SPIRV-Cross/releases/tag/vulkan-sdk-1.4.363.0), see [compile.sh](scripts/compile.sh).
+> Built pure from Khronos glslang [16.6.0](https://github.com/KhronosGroup/glslang/releases/tag/16.6.0) and SPIRV-Cross, see [compile.sh](scripts/compile.sh).
 
 ## Usage
 
