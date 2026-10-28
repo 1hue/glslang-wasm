@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build dist/ and third-party licenses, see Makefile
+# Build dist/ and third-party licenses - started by make build
 set -eu
 
 GLSLANG_TAG=16.6.0
@@ -60,7 +60,7 @@ em++ -Oz -flto -fwasm-exceptions \
 	-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,UTF8ToString,HEAPU32 \
 	-o dist/glslang.js
 
-# Loader and its types
+# Build loader and its types
 npm ci
 npm run build:ts
 

@@ -189,7 +189,7 @@ export function parseLog(log: string): Diagnostic[] {
 		const unlocated = UNLOCATED.exec(line);
 		if (unlocated) {
 			const [, severity, message] = unlocated;
-			// Not totals like `1 compilation errors.  No code generated.`
+			// Skip totals like `1 compilation errors.  No code generated.`
 			if (!TOTALS.test(message)) {
 				diagnostics.push({ severity: severity === 'ERROR' ? 'error' : 'warning', source: '', message });
 			}
